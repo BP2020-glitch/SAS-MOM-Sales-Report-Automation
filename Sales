@@ -103,4 +103,40 @@
   ods html close;
   ods listing;
 
+%Macro Salesreport;
+data bi.age_range7;
+set bi.age_range6;
+loops=_n_;
+run;
+
+proc sql;
+select max(loops)into:loops
+from bi.age_range8;
+quit;
+
+%do=i %to &loops;
+proc sql;
+create table bi.test as
+select Jan,Feb,Mar,Apr,May into :Month1, :Month2, :Month3, :Month4, :Month5 
+from bi.age_range7
+where loops=&i;
+quit; 
+
+DATA bi.age_range8;
+set bi.age_range7 ;
+MOM_FebToJan=('&Month2'-'&Month1')/'&month1';
+format MOM_FebToJan PERCENT7.2;
+
+MOM_MarToFeb=('&Month3'-'&Month2')/'&month2';
+format MOM_MarToFeb PERCENT7.2;
+
+MOM_AprToMar=('&Month4'-'&Month3')/'&month3';
+format MOM_AprToMar PERCENT7.2;
+
+MOM_MayToApr=('&Month5'-'&Month4')/'&month4';
+format MOM_MayToApr PERCENT7.2;
+RUN ;
+%end;
+%mend;
+%Salesreport; 
 
